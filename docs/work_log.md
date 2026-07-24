@@ -161,27 +161,25 @@ Elasticsearch, Logstash, Kibana 컨테이너가 모두 정상 실행되었다.
 - SSH 로그인 실패 이벤트를 생성하고 ELK Stack에서 로그 수집 및 탐지 여부 확인
 
 ### 수행 내용
-- UTM 공유 네트워크 환경에서 Ubuntu와 Mac 간 통신 문제 해결
-- Filebeat의 Logstash 출력 주소를 수정하여 ELK Stack과 정상적으로 연동
-- Kali Linux에서 존재하지 않는 계정으로 SSH 로그인을 시도하여 공격 로그 생성
-- Ubuntu `auth.log`에서 SSH 로그인 실패 로그 확인
-- Kibana Discover에서 SSH 로그인 실패 로그가 정상적으로 수집되는 것을 확인
+- Kali Linux에서 존재하지 않는 계정으로 SSH 로그인을 시도하여 로그인 실패 이벤트 생성
+- Ubuntu auth.log에서 SSH 인증 실패 로그 확인
+- Filebeat를 통해 수집된 로그가 Elasticsearch에 정상 저장되는 것을 확인
+- Kibana Discover에서 SSH 로그인 실패 이벤트가 정상적으로 탐지되는 것을 확인
 - 결과 화면을 스크린샷으로 저장
 
 ### 문제점
 - Filebeat가 Logstash와 연결되지 않아 Kibana에 로그가 수집되지 않음
-- 잘못된 Logstash IP 주소 설정으로 인해 `dial tcp ... i/o timeout` 오류 발생
+- 잘못된 Logstash IP 주소 설정으로 인해 dial tcp ... i/o timeout 오류 발생
 
 ### 해결 내용
 - Logstash 출력 주소를 UTM 공유 네트워크 게이트웨이(`192.168.64.1:5044`)로 변경
 - `sudo filebeat test output` 명령으로 Logstash와 정상적으로 연결되는 것을 확인
-- Filebeat 재시작 후 Kibana에서 신규 SSH 로그인 실패 로그가 정상적으로 수집되는 것을 확인
+- Filebeat 재시작 후 Kibana에서 SSH 로그인 실패 로그가 정상적으로 수집되는 것을 확인
 
 ### 다음 계획
-- SSH 로그인 성공 이벤트를 생성하고 로그 확인
-- sudo 실행 이벤트를 생성하고 로그 분석
-- 사용자 생성 및 삭제 이벤트를 생성하여 로그 확인
-- 생성된 보안 이벤트를 Kibana에서 분석
+- SSH Brute Force 공격 시나리오 수행
+- Kibana에서 공격 로그 시각화 구성
+- Nmap Port Scan 및 추가 보안 이벤트 생성
 
 ## Day 4 (2026-07-21)
 
@@ -189,13 +187,13 @@ Elasticsearch, Logstash, Kibana 컨테이너가 모두 정상 실행되었다.
 - SSH Brute Force 공격 이벤트를 생성하고 Kibana를 활용하여 공격 로그 탐지 및 시각화 구성
 
 ### 수행 내용
-- Kali Linux에서 Nmap을 이용하여 Ubuntu 서버 대상 포트 스캔 수행
-- Hydra를 활용하여 SSH Brute Force 공격 이벤트 생성
+- Hydra를 활용하여 SSH Brute Force 공격 수행
 - Ubuntu auth.log에서 반복적인 SSH 로그인 실패 로그 확인
 - Filebeat를 통해 수집된 SSH 인증 로그가 Elasticsearch에 정상 저장되는 것을 확인
 - Kibana Discover에서 Failed password 검색을 통해 SSH 로그인 실패 이벤트 분석
-- Kibana Lens를 활용하여 SSH 로그인 실패 이벤트 추이를 확인하는 시각화 생성
+- Kibana Lens를 활용하여 SSH 로그인 실패 이벤트 추이 시각화 생성
 - 생성한 시각화를 Dashboard에 추가하여 보안 이벤트 모니터링 화면 구성
+- 추가적으로 Nmap을 이용한 Ubuntu 서버 대상 Port Scan 수행
 
 ### 문제점
 - Kibana Lens에서 SSH 로그인 실패 로그 검색 시 데이터가 표시되지 않는 문제 발생
@@ -207,9 +205,9 @@ Elasticsearch, Logstash, Kibana 컨테이너가 모두 정상 실행되었다.
 - KQL 검색 조건(message : "Failed password")을 적용하여 SSH 로그인 실패 이벤트 정상 조회 확인
 
 ### 다음 계획
-- 추가적인 보안 이벤트(포트 스캔, 로그인 성공, sudo 실행 등)를 기반으로 탐지 항목 확장
-- 최종 Dashboard 구성 정리 및 보안 이벤트 분석 결과 정리
-- 프로젝트 전체 진행 내용 기반 최종 보고서 작성
+- Port Scan 결과 분석
+- sudo 실행 이벤트 생성 및 분석
+- Kibana Dashboard 최종 구성
 
 ## Day 5 (2026-07-23)
 
@@ -221,11 +219,10 @@ Elasticsearch, Logstash, Kibana 컨테이너가 모두 정상 실행되었다.
 - Nmap 결과를 기반으로 열린 포트 및 서비스 정보 확인
 - FTP, Telnet, RPC/NFS 등 외부 노출 서비스에 대한 보안 위험 분석
 - Port Scan 공격 시나리오 및 탐지 관점 분석
-- Ubuntu에서 sudo 명령 실행을 통해 관리자 권한 사용 이벤트 생성
+- Ubuntu에서 sudo 명령을 실행하여 관리자 권한 사용 이벤트 생성
 - Kibana Discover에서 sudo 관련 auth.log 이벤트 정상 수집 확인
-- Kibana Lens를 활용하여 sudo 이벤트 기반 Sudo Activity 시각화 생성
-- 기존 SSH 로그인 실패 로그 시각화와 Sudo Activity를 Dashboard에 추가
-- Linux Security Monitoring Dashboard 구성 및 보안 이벤트 모니터링 화면 완성
+- Kibana Lens를 활용하여 Sudo Activity 시각화 생성
+- 기존 SSH 로그인 실패 시각화와 함께 Dashboard 구성 완료
 
 ### 문제점
 - 기존에 생성한 Kibana Dashboard가 목록에서 확인되지 않는 문제 발생
@@ -233,15 +230,13 @@ Elasticsearch, Logstash, Kibana 컨테이너가 모두 정상 실행되었다.
 
 ### 해결 내용
 - Kibana Dashboard 및 Saved Objects 목록 확인
-- 기존 생성한 Visualization 존재 여부 확인
-- 기존 Dashboard를 다시 확인하고 저장된 시각화 항목 복구
-- Sudo Activity Visualization을 추가하여 최종 Dashboard 구성 완료
+- 기존 Visualization 존재 여부 확인
+- Dashboard를 복구하고 Sudo Activity 시각화를 추가하여 최종 Dashboard 구성 완료
 
 ### 다음 계획
-- 프로젝트 전체 수행 과정 및 결과 정리
-- 주요 공격 시나리오(SSH Brute Force, Port Scan, 관리자 권한 사용) 분석 내용 정리
-- Kibana Dashboard 및 탐지 결과 기반 최종 보고서 작성
-- GitHub README 및 포트폴리오용 프로젝트 내용 정리
+- 프로젝트 수행 결과 정리
+- README 및 GitHub 저장소 작성
+- 포트폴리오용 프로젝트 문서 정리
 
 ## Day 6 (2026-07-24)
 
@@ -249,11 +244,16 @@ Elasticsearch, Logstash, Kibana 컨테이너가 모두 정상 실행되었다.
 - 프로젝트 결과 정리 및 최종 산출물 작성
 
 ### 수행 내용
-- Kibana Dashboard 최종 구성 확인
-- 주요 보안 이벤트 분석 결과 정리
-- 프로젝트 수행 과정 및 기술 스택 정리
-- README 및 포트폴리오 내용 작성
+- Kibana Dashboard 최종 구성 및 시각화 검토
+- 주요 공격 시나리오(SSH Brute Force, Port Scan, sudo 이벤트) 분석 결과 정리
+- 프로젝트 기술 스택 및 시스템 구성 문서 정리
+- GitHub README 작성 및 핵심 스크린샷 정리
+- GitHub Repository 최종 점검 및 프로젝트 업로드 완료
 
 ### 결과
-- ELK 기반 Linux 보안관제 환경 구축 완료
-- 공격 이벤트 생성부터 로그 분석 및 시각화까지 전체 과정 정리 완료
+- ELK Stack 기반 Linux 보안관제 환경 구축 완료
+- Linux 시스템 로그 수집부터 공격 시나리오 수행, 탐지 및 시각화까지 전체 보안관제 프로세스 구현
+- GitHub를 통한 프로젝트 문서화 및 포트폴리오 공개 완료
+
+
+
