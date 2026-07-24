@@ -39,7 +39,7 @@ Kali Linux를 이용하여 다양한 공격 시나리오를 수행하고, 생성
 
 ## 시스템 구성
 
-```
+```text
 Kali Linux
       │
       │ 공격 수행
@@ -109,8 +109,9 @@ Kibana Dashboard
 
 ## 프로젝트 구조
 
-```
+```text
 security-monitoring
+├── README.md
 ├── docker
 │   ├── docker-compose.yml
 │   ├── filebeat
@@ -119,48 +120,74 @@ security-monitoring
 │   └── logstash
 │       └── pipeline
 │           └── logstash.conf
-│
 ├── docs
 │   ├── architecture.md
 │   ├── project_plan.md
 │   ├── requirements_spec.md
 │   └── work_log.md
-│
-├── screenshots
-│
-└── README.md
+├── logs
+└── screenshots
 ```
 
 ---
 
-## 주요 화면
+# 주요 화면
 
-### ELK Stack 실행
+## 1. ELK Stack 실행
 
-- Docker Container 실행
+Docker Compose를 이용하여 ELK Stack 컨테이너를 실행한 화면입니다.
 
-### Kibana Dashboard
+![ELK Running](screenshots/elk_running.png)
+
+---
+
+## 2. Kibana Dashboard
+
+최종적으로 구성한 보안관제 Dashboard입니다.
 
 - SSH Failed Login Trend
 - SSH Failed Login Logs
 - Sudo Activity
 
-### SSH Brute Force 탐지
-
-- Hydra를 이용한 Brute Force 공격
-- auth.log 및 Kibana Discover에서 공격 로그 확인
-
-### Port Scan 탐지
-
-- Nmap을 이용한 Port Scan 수행
-- 열린 포트 및 서비스 정보 확인
+![Kibana Dashboard](screenshots/kibana_dashboard.png)
 
 ---
 
-## 배운 점
+## 3. Kibana Discover
 
-- ELK Stack 기반 로그 수집 및 분석 환경 구축 경험
-- Linux 인증 로그 분석 및 보안 이벤트 탐지 경험
-- Filebeat, Logstash, Elasticsearch 연동 방식 이해
-- Kibana Dashboard를 활용한 보안 로그 시각화 경험
+Filebeat를 통해 수집된 Linux 인증 로그를 Kibana Discover에서 확인한 화면입니다.
 
+![Kibana Discover](screenshots/kibana_discover.png)
+
+---
+
+## 4. SSH Brute Force 탐지
+
+Hydra를 이용하여 SSH Brute Force 공격을 수행하고 Kibana에서 탐지한 결과입니다.
+
+![SSH Brute Force](screenshots/ssh_bruteforce.png)
+
+---
+
+## 5. Port Scan 탐지
+
+Nmap을 이용하여 대상 서버의 열린 포트 및 서비스를 확인한 결과입니다.
+
+![Port Scan Result](screenshots/portscan_result.png)
+
+---
+
+## 6. Sudo Activity
+
+Linux에서 sudo 명령 실행 이벤트를 Kibana에서 확인한 화면입니다.
+
+![Sudo Activity](screenshots/sudo_activity.png)
+
+---
+
+# 프로젝트를 통해 배운 점
+
+- ELK Stack 기반 로그 수집 및 분석 환경을 직접 구축하며 보안관제 시스템의 전체 동작 과정을 이해할 수 있었습니다.
+- Filebeat, Logstash, Elasticsearch의 연동 구조와 로그 처리 흐름을 경험하였습니다.
+- SSH Brute Force, Port Scan 등의 공격 시나리오를 수행하고 실제 로그를 기반으로 탐지하는 과정을 익혔습니다.
+- Kibana Dashboard를 구성하여 보안 이벤트를 시각적으로 분석하고 모니터링하는 방법을 학습하였습니다.
